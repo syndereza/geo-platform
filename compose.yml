@@ -24,6 +24,11 @@ services:
   
   ingest:
     build: ./ingest
+    env_file:
+      - .env.example
+    environment:
+      - POSTGRES_HOST=spatial-database
+      - POSTGRES_PORT=5432
     depends_on:
       - spatial-database
 
