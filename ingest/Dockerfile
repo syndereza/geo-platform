@@ -6,3 +6,4 @@ COPY . .
 RUN mkdir data && unzip -jd data *.zip '*.xml' && rm *.zip 
 
 ENTRYPOINT ["/ingest/load.sh"]
+CMD ["data"]

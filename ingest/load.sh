@@ -1,6 +1,7 @@
 #!/bin/sh
 
-LAYERS="$(ls data)"
+DIR="$1"
+LAYERS="$(ls $DIR)"
 
 for LAYER in $LAYERS; do
     echo "processing $LAYER ..."
