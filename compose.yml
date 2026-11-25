@@ -9,7 +9,7 @@ services:
       - postgis-data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U geo -d ingested_data"]
-      interval: 5s
+      interval: 2s
       timeout: 5s
       retries: 5
 
@@ -20,7 +20,8 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana 
     depends_on:
-      - spatial-database
+      spatial-database:
+        condition: service_healthy
   
   ingest:
     build: ./ingest
@@ -29,9 +30,13 @@ services:
     environment:
       - POSTGRES_HOST=spatial-database
       - POSTGRES_PORT=5432
+    volumes:
+      - ingest-cache:/ingest/data
     depends_on:
-      - spatial-database
+      spatial-database:
+        condition: service_healthy
 
 volumes:
   postgis-data:
   grafana-storage:
+  ingest-cache:

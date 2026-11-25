@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DIR="$1"
-LAYERS="$(ls $DIR)"
+LAYERS="$(ls -1 $DIR | grep '\.xml$')"
 
 for LAYER in $LAYERS; do
     echo "processing $LAYER ..."
