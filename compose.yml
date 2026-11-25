@@ -13,5 +13,15 @@ services:
       timeout: 5s
       retries: 5
 
+  dashboard:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana 
+    depends_on:
+      - spatial-database
+
 volumes:
-  postgis_data:
+  postgis-data:
+  grafana-storage:
