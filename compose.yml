@@ -1,6 +1,6 @@
 services:
   spatial-database:
-    image: postgis/postgis:18-master
+    image: postgis/postgis:18-3.7
     env_file:
       - .env.example
     ports:
