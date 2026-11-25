@@ -1,0 +1,42 @@
+services:
+  spatial-database:
+    image: postgis/postgis:18-3.7
+    env_file:
+      - .env.example
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgis-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U geo -d ingested_data"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
+  dashboard:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana 
+    depends_on:
+      spatial-database:
+        condition: service_healthy
+  
+  ingest:
+    build: ./ingest
+    env_file:
+      - .env.example
+    environment:
+      - POSTGRES_HOST=spatial-database
+      - POSTGRES_PORT=5432
+    volumes:
+      - ingest-cache:/ingest/data
+    depends_on:
+      spatial-database:
+        condition: service_healthy
+
+volumes:
+  postgis-data:
+  grafana-storage:
+  ingest-cache:
