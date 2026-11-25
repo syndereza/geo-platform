@@ -1,6 +1,10 @@
 #!/bin/sh
 
-ls -1 data
+LAYERS="$(ls data)"
+
+for LAYER in $LAYERS; do
+    echo "processing $LAYER ..."
+done
 
 # wait until termination
 trap 'exit 0' TERM INT
