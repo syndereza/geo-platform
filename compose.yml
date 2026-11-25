@@ -21,6 +21,11 @@ services:
       - grafana-storage:/var/lib/grafana 
     depends_on:
       - spatial-database
+  
+  ingest:
+    build: ./ingest
+    depends_on:
+      - spatial-database
 
 volumes:
   postgis-data:
