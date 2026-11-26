@@ -22,6 +22,17 @@ services:
     depends_on:
       spatial-database:
         condition: service_healthy
+
+  tile-server:
+    image: ghcr.io/maplibre/martin:2.0.0-beta.8
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./martin/config:/config 
+    depends_on:
+      spatial-database:
+        condition: service_healthy
+  
   
   ingest:
     build: ./ingest
