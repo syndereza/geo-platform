@@ -1,4 +1,16 @@
 services:
+  router:
+    image: traefik:v3.8
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   spatial-database:
     image: postgis/postgis:18-3.7
     env_file:
@@ -19,6 +31,8 @@ services:
       - "3000:3000"
     volumes:
       - grafana-storage:/var/lib/grafana 
+    labels:
+      - "traefik.http.routers.dashboard.rule=Host(`dashboard.${SERVER.HOSTNAME}`)"
     depends_on:
       spatial-database:
         condition: service_healthy
@@ -31,6 +45,8 @@ services:
       - ./martin/config:/config 
     command:
       - postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-spatial-database}:${POSTGRES_PORT:-5432}/${POSTGRES_DB}
+    labels:
+      - "traefik.http.routers.tiles.rule=Host(`tiles.${SERVER_HOSTNAME}`)"
     depends_on:
       spatial-database:
         condition: service_healthy
