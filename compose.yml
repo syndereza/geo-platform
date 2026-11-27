@@ -29,11 +29,16 @@ services:
       - "3001:3000"
     volumes:
       - ./martin/config:/config 
+    command:
+      - --webui
+      - enable-for-all 
+      - postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-spatial-database}:${POSTGRES_PORT:-5432}/${POSTGRES_DB}
     depends_on:
       spatial-database:
         condition: service_healthy
-  
-  
+      ingest:
+        condition: service_completed_successfully
+
   ingest:
     build: ./ingest
     env_file:
@@ -43,6 +48,7 @@ services:
       - POSTGRES_PORT=5432
     volumes:
       - ingest-cache:/ingest/data
+    restart: on-failure
     depends_on:
       spatial-database:
         condition: service_healthy

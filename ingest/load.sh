@@ -11,12 +11,10 @@ for LAYER in $LAYERS; do
         "$DIR/$LAYER" \
         -nln $(echo "$LAYER" | tr ' .' __) \
         -lco GEOMETRY_NAME=geom \
+        -s_srs EPSG:2180 \
+        -t_srs EPSG:4326 \
         -overwrite \
         --quiet
 done
 
 echo "processing done"
-
-# wait until termination
-trap 'exit 0' TERM INT
-while true; do sleep 1000 & wait $!; done
