@@ -30,8 +30,6 @@ services:
     volumes:
       - ./martin/config:/config 
     command:
-      - --webui
-      - enable-for-all 
       - postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-spatial-database}:${POSTGRES_PORT:-5432}/${POSTGRES_DB}
     depends_on:
       spatial-database:
