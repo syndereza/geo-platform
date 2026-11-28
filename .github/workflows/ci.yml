@@ -1,0 +1,41 @@
+name: Continuous integration
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*.*.*"]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ------------------------- LINT -------------------------
+
+  compose-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose file
+        run: |
+          cp .env.example .env
+          docker compose config --quiet
+
+  # sql-lint:
+  #   runs-on: ubuntu-latest
+  #   container: ghcr.io/sqlfluff/sqlfluff:3.1.1
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - run: sqlfluff lint --dialect postgres initdb/
+  #       continue-on-error: true   # tighten once the SQL is clean
+
+  yaml-lint:
+    runs-on: ubuntu-latest
+    container: pipelinecomponents/yamllint:0.35.27
+    steps:
+      - uses: actions/checkout@v4
+      - run: yamllint -f parsable compose.yaml .github/workflows/ci.yml
+        continue-on-error: true
