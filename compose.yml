@@ -2,21 +2,19 @@ services:
   router:
     image: traefik:v3.8
     command:
-      - "--api.insecure=true"
       - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
     ports:
       - "80:80"
-      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: always
 
   spatial-database:
     image: postgis/postgis:18-3.7
     env_file:
       - .env.example
-    ports:
-      - "5432:5432"
     volumes:
       - postgis-data:/var/lib/postgresql
     healthcheck:
@@ -24,29 +22,31 @@ services:
       interval: 2s
       timeout: 5s
       retries: 5
+    restart: always
 
   dashboard:
     image: grafana/grafana:13.0
-    ports:
-      - "3000:3000"
     volumes:
       - grafana-storage:/var/lib/grafana 
     labels:
-      - "traefik.http.routers.dashboard.rule=Host(`dashboard.${SERVER_HOSTNAME}`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`grafana.${SERVER_HOSTNAME}`)"
+    restart: always
     depends_on:
       spatial-database:
         condition: service_healthy
 
   tile-server:
     image: ghcr.io/maplibre/martin:2.0.0-beta.8
-    ports:
-      - "3001:3000"
     volumes:
       - ./martin/config:/config 
     command:
       - postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-spatial-database}:${POSTGRES_PORT:-5432}/${POSTGRES_DB}
     labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.tiles.loadbalancer.server.port=3000"
       - "traefik.http.routers.tiles.rule=Host(`tiles.${SERVER_HOSTNAME}`)"
+    restart: always
     depends_on:
       spatial-database:
         condition: service_healthy
@@ -66,6 +66,7 @@ services:
     depends_on:
       spatial-database:
         condition: service_healthy
+    
 
 volumes:
   postgis-data:
