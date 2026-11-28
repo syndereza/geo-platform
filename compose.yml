@@ -2,6 +2,7 @@ services:
   router:
     image: traefik:v3.8
     command:
+      - "--accesslog=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
