@@ -32,7 +32,7 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana 
     labels:
-      - "traefik.http.routers.dashboard.rule=Host(`dashboard.${SERVER.HOSTNAME}`)"
+      - "traefik.http.routers.dashboard.rule=Host(`dashboard.${SERVER_HOSTNAME}`)"
     depends_on:
       spatial-database:
         condition: service_healthy
