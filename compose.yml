@@ -45,7 +45,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.tiles.loadbalancer.server.port=3000"
-      - "traefik.http.routers.tiles.rule=Host(`tiles.${SERVER_HOSTNAME}`)"
+      - "traefik.http.routers.tiles.rule=Host(`tiles.${SERVER_HOSTNAME}`) && !PathPrefix(`/_/metrics`)"
     restart: always
     depends_on:
       spatial-database:
