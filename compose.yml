@@ -14,7 +14,7 @@ services:
   spatial-database:
     image: postgis/postgis:18-3.7
     env_file:
-      - .env.example
+      - .env
     volumes:
       - postgis-data:/var/lib/postgresql
     healthcheck:
@@ -56,10 +56,7 @@ services:
   ingest:
     build: ./ingest
     env_file:
-      - .env.example
-    environment:
-      - POSTGRES_HOST=spatial-database
-      - POSTGRES_PORT=5432
+      - .env
     volumes:
       - ingest-cache:/ingest/data
     restart: on-failure
